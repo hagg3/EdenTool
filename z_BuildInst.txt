@@ -1,0 +1,40 @@
+Below command block compiles a build of the latest version of the software that has an experimental reverse convertor (MC2Eden) but it has only been vibe coded and not yet tested.
+
+clang++ -std=c++17 -O2 \
+main.cpp \
+EdenFileLoader.cpp \
+AnvilWriter.cpp \
+NBT.cpp \
+BlockMap.cpp \
+AnvilReader.cpp \
+Downsampler.cpp \
+MCToEdenMapper.cpp \
+EdenWriter.cpp \
+MC2EdenConverter.cpp \
+-o eden_tool_v2 -lz
+
+STANDARD USAGE:
+This will convert FILE.eden to Minecraft and output region files to /ConvertedWorld/
+
+./eden_tool_v2
+
+
+REVERSE (EXPERIMENTAL):
+./eden_tool_v2 mc2eden
+
+./eden_tool_v2 mc2eden /EdenFileReader/inputRegion TEST.eden
+
+
+TERRAIN GENERATOR
+Usage: ./eden_tool_v2 generate <width> <depth> <seed> <output_file.eden> [baseHeight] [waterAmnt(1-5)]
+
+Example:
+
+./eden_tool_v2 generate 512 512 12345 terrain.eden
+./eden_tool_v2 generate 256 256 12345 test_water3.eden 30 3
+
+<width> <depth> = horizontal and vertical measurements of world size in blocks
+<seed> = seed for the generator
+<output_file.eden> = output file name. Generates uncompressed .eden file
+[baseHeight] = lower values give you less underground and more above ground space
+[waterAmnt(1-5)] = 1 for 10% land and more water, 5 for 100% land and no water.

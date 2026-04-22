@@ -1,0 +1,100 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\fnil\fcharset0 Menlo-Bold;\f2\fnil\fcharset0 Menlo-BoldItalic;
+}
+{\colortbl;\red255\green255\blue255;\red154\green5\blue255;\red36\green36\blue36;\red0\green0\blue0;
+\red99\green99\blue99;}
+{\*\expandedcolortbl;;\cssrgb\c67533\c22543\c100000;\cssrgb\c18938\c18938\c18938;\csgray\c0;
+\cssrgb\c46558\c46558\c46558;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs22 \cf2 \CocoaLigature0 \uc0\u10022  \cf3 This project, 
+\f1\b EdenFileReader
+\f0\b0 , is a C++ utility designed to convert world save files from the iOS game "Eden" into Minecraft 1.12 Anvil format (\cf2 .mca\cf3 ). The\cf4 \
+  \cf3 codebase is a functional prototype that successfully parses Eden's binary structure and re-encodes it for Minecraft, but it currently relies on hardcoded\cf4 \
+  \cf3 block mappings and ignores significant data like block colors.\cf4 \
+\
+  
+\f1\b \cf3 Technical Briefing for AI-Driven Improvements
+\f0\b0 \cf4 \
+\
+  
+\f2\i\b \cf5 1. Core Architecture
+\f0\i0\b0 \cf4 \
+   \cf3 * 
+\f1\b Data Parsing (\cf2 EdenFileLoader.cpp/h\cf3 )
+\f0\b0 : Reads the binary \cf2 .eden\cf3  files. These files are organized into chunk columns (16x16x64), where each voxel contains a\cf4 \
+     \cf2 block8\cf3  (Type ID) and a \cf2 color8\cf3  (Color ID).\cf4 \
+   \cf3 * 
+\f1\b Block Mapping (\cf2 BlockMap.cpp/h\cf3 )
+\f0\b0 : Translates Eden IDs into Minecraft IDs and metadata. Currently, this uses \cf2 std::unordered_map\cf3  and a \cf2 switch\cf3  statement.\cf4 \
+   \cf3 * 
+\f1\b Minecraft Encoding (\cf2 AnvilWriter.cpp/h\cf3  & \cf2 NBT.cpp/h\cf3 )
+\f0\b0 : Implements the Minecraft 1.12 Anvil format, including NBT compound structures, zlib compression,\cf4 \
+     \cf3 and regional \cf2 .mca\cf3  file management.\cf4 \
+   \cf3 * 
+\f1\b Entry Point (\cf2 main.cpp\cf3 )
+\f0\b0 : A simple CLI wrapper that triggers the conversion of a hardcoded file (\cf2 FILE.eden\cf3 ).\cf4 \
+\
+  
+\f2\i\b \cf5 2. Data Representation
+\f0\i0\b0 \cf4 \
+   \cf3 * 
+\f1\b Eden Blocks
+\f0\b0 : Defined by \cf2 BLOCK_TYPES\cf3  in \cf2 Constants.h\cf3 . There are over 111 types (though roughly 64 are primary building blocks).\cf4 \
+   \cf3 * 
+\f1\b Eden Colors
+\f0\b0 : Each block has a color value (\cf2 color8\cf3 ). In Eden, users can paint blocks, and this value represents that color index.\cf4 \
+   \cf3 * 
+\f1\b Minecraft Blocks
+\f0\b0 : Represented as a pair of \cf2 mcId\cf3  (1.12 ID) and \cf2 mcData\cf3  (4-bit metadata/variant).\cf4 \
+\
+  
+\f2\i\b \cf5 3. Current Issues & Limitations
+\f0\i0\b0 \cf4 \
+   \cf3 * 
+\f1\b Color Blindness
+\f0\b0 : The \cf2 mapEdenToMinecraft\cf3  function receives the Eden color but discards it. Consequently, all variations of a block (e.g., green grass\cf4 \
+     \cf3 vs. red painted grass) map to the same Minecraft block.\cf4 \
+   \cf3 * 
+\f1\b Hardcoded Logic
+\f0\b0 : Mapping is "baked" into the C++. Changing a mapping requires modifying the source and recompiling.\cf4 \
+   \cf3 * 
+\f1\b Incomplete Mapping
+\f0\b0 : Many Eden blocks default to generic Stone because the mapping table is manually maintained and incomplete.\cf4 \
+   \cf3 * 
+\f1\b User Experience
+\f0\b0 : The program is a basic CLI with hardcoded paths, making it difficult for non-technical users to operate.\cf4 \
+\
+  
+\f2\i\b \cf5 4. Development Roadmap
+\f0\i0\b0 \cf4 \
+   \cf3 1. 
+\f1\b Dynamic Mapping System
+\f0\b0 :\cf4 \
+       \cf3 * Implement a JSON-based configuration loader.\cf4 \
+       \cf3 * The system should look up mappings using a composite key: \cf2 (EdenBlockID, EdenColor)\cf3 .\cf4 \
+       \cf3 * Example: \cf2 \{"id": 8, "color": 5\} -> \{"mc_id": 35, "mc_data": 14\}\cf3  (maps red-painted Eden grass to Red Wool).\cf4 \
+   \cf3 2. 
+\f1\b Code Cleanup
+\f0\b0 :\cf4 \
+       \cf3 * Refactor \cf2 BlockMap.cpp\cf3  to remove the hardcoded maps and instead use the new JSON loader.\cf4 \
+       \cf3 * Ensure the \cf2 ConvList1.json\cf3  (or a successor) follows a valid JSON schema.\cf4 \
+   \cf3 3. 
+\f1\b Expanded Functionality
+\f0\b0 :\cf4 \
+       \cf3 * Add support for more complex mappings (e.g., mapping Eden's multi-part doors or ramps to correct Minecraft orientations).\cf4 \
+   \cf3 4. 
+\f1\b GUI Integration
+\f0\b0 :\cf4 \
+       \cf3 * Transition from a console application to a graphical interface (using a library like Qt or a simple wrapper) to allow users to select files and\cf4 \
+         \cf3 edit mappings visually.\cf4 \
+\
+  
+\f2\i\b \cf5 5. Key Files for Reference
+\f0\i0\b0 \cf4 \
+   \cf3 * \cf2 Constants.h\cf3 : The source of truth for Eden \cf2 BLOCK_TYPES\cf3 .\cf4 \
+   \cf3 * \cf2 BlockMap.cpp\cf3 : The logic center that needs to be refactored for color support and JSON loading.\cf4 \
+   \cf3 * \cf2 EdenFileLoader.cpp\cf3 : The conversion loop that passes data from the Eden parser to the Minecraft writer.\cf4 \
+   \cf3 * \cf2 ConvList1.json\cf3 : The starting point for an external configuration file (currently invalid JSON).\cf4 \
+}
